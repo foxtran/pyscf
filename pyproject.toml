@@ -72,3 +72,9 @@ fciqmcscf = ["pyscf-fciqmc"]
 tblis = ["pyscf-tblis"]
 icmpspt = ["pyscf-icmpspt"] # broken
 shciscf = ["pyscf-shciscf"] # broken
+
+[tool.uv.sources]
+pyscf-cornell-shci = { git = "https://github.com/pyscf/cornell-shci" }
+pyscf-nao = { git = "https://github.com/pyscf/nao" }
+pyscf-fciqmc = { git = "https://github.com/pyscf/fciqmc" }
+pyscf-icmpspt = { git = "https://github.com/pyscf/icmpspt" }

@@ -108,12 +108,9 @@ except ImportError:
 # https://github.com/scipy/scipy/issues/12533
 _scipy_version = 'scipy!=1.5.0,!=1.5.1'
 if sys.platform == 'darwin':
-    if sys.version_info < (3, 8):
-        _scipy_version = 'scipy<=1.1.0'
-    else:
-        print('scipy>1.1.0 may crash when calling scipy.linalg.eigh. '
-              '(Issues https://github.com/scipy/scipy/issues/15362 '
-              'https://github.com/scipy/scipy/issues/16151)')
+    print('scipy>1.1.0 may crash when calling scipy.linalg.eigh. '
+          '(Issues https://github.com/scipy/scipy/issues/15362 '
+          'https://github.com/scipy/scipy/issues/16151)')
 
 setup(
     version=VERSION,

@@ -41,6 +41,22 @@ jobs:
         with:
           token: ${{secrets.CODECOV_TOKEN}}
 
+  linux-build-aarch64-native:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04-arm64]
+        python-version: ["3.13"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install and Test
+        run: ./.github/workflows/run_ci.sh
+
   linux-build-aarch64-qemu:
     runs-on: ${{ matrix.os }}
     strategy:

@@ -16,19 +16,19 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build wheels
         run: |
-            docker run --rm -v ${{ github.workspace }}:/src/pyscf \
-            -e CMAKE_BUILD_PARALLEL_LEVEL=4 \
-            pyscf/pyscf-pypa-env:latest \
-            bash /src/pyscf/docker/pypa-env/build-wheels.sh
+          docker run --rm -v ${{ github.workspace }}:/src/pyscf \
+          -e CMAKE_BUILD_PARALLEL_LEVEL=4 \
+          pyscf/pyscf-pypa-env:latest \
+          bash /src/pyscf/docker/pypa-env/build-wheels.sh
       - name: List available wheels
         run: |
           ls ${{ github.workspace }}/linux-wheels
       - name: Publish to PyPI
         run: |
-            pip3 install twine==6.0.1
-            export TWINE_USERNAME=__token__
-            export TWINE_PASSWORD="${{ secrets.PYPI_API_TOKEN }}"
-            twine upload --verbose linux-wheels/*
+          pip3 install twine==6.0.1
+          export TWINE_USERNAME=__token__
+          export TWINE_PASSWORD="${{ secrets.PYPI_API_TOKEN }}"
+          twine upload --verbose linux-wheels/*
 
   release-pypi-aarch64:
     runs-on: ubuntu-latest
@@ -37,33 +37,33 @@ jobs:
     env:
       img: quay.io/pypa/manylinux2014_aarch64:latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Set up QEMU
-      id: qemu
-      uses: docker/setup-qemu-action@v2
-    - name: Build Wheel
-      run: |
-            docker run --rm -v ${{ github.workspace }}:/src/pyscf:rw --workdir=/src/pyscf \
-            ${{ env.img }} \
-            bash -exc '/opt/python/cp39-cp39/bin/pip install --upgrade pip setuptools && \
-            yum install -y epel-release && \
-            yum-config-manager --enable epel && \
-            yum install -y openblas-devel gcc && \
-            export src=${GITHUB_WORKSPACE:-/src/pyscf} && \
-            export dst=${GITHUB_WORKSPACE:-/src/pyscf}/linux-wheels && \
-            export CMAKE_CONFIGURE_ARGS="-DWITH_F12=OFF -DENABLE_SMD=ON" && \
-            export CMAKE_BUILD_PARALLEL_LEVEL=4 && \
-            mkdir -p /root/wheelhouse $src/linux-wheels && \
-            sed -i "/            if basename(fn) not in needed_libs:/s/basename.*libs/1/" /opt/_internal/pipx/venvs/auditwheel/lib/python*/site-packages/auditwheel/wheel_abi.py && \
-            /opt/python/cp39-cp39/bin/pip wheel -v --no-deps --no-clean -w /root/wheelhouse $src && \
-            export whl=`ls /root/wheelhouse/pyscf-*-linux_*.whl` && \
-            auditwheel -v repair "$whl" --lib-sdir /lib -w $dst'
-    - name: List available wheels
-      run: |
-        ls ${{ github.workspace }}/linux-wheels
-    - name: Publish to PyPI
-      run: |
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v2
+      - name: Build Wheel
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/src/pyscf:rw --workdir=/src/pyscf \
+          ${{ env.img }} \
+          bash -exc '/opt/python/cp311-cp311/bin/pip install --upgrade pip setuptools && \
+          yum install -y epel-release && \
+          yum-config-manager --enable epel && \
+          yum install -y openblas-devel gcc && \
+          export src=${GITHUB_WORKSPACE:-/src/pyscf} && \
+          export dst=${GITHUB_WORKSPACE:-/src/pyscf}/linux-wheels && \
+          export CMAKE_CONFIGURE_ARGS="-DWITH_F12=OFF -DENABLE_SMD=ON" && \
+          export CMAKE_BUILD_PARALLEL_LEVEL=4 && \
+          mkdir -p /root/wheelhouse $src/linux-wheels && \
+          sed -i "/            if basename(fn) not in needed_libs:/s/basename.*libs/1/" /opt/_internal/pipx/venvs/auditwheel/lib/python*/site-packages/auditwheel/wheel_abi.py && \
+          /opt/python/cp311-cp311/bin/pip wheel -v --no-deps --no-clean -w /root/wheelhouse $src && \
+          export whl=`ls /root/wheelhouse/pyscf-*-linux_*.whl` && \
+          auditwheel -v repair "$whl" --lib-sdir /lib -w $dst'
+      - name: List available wheels
+        run: |
+          ls ${{ github.workspace }}/linux-wheels
+      - name: Publish to PyPI
+        run: |
           pip3 install twine==6.0.1
           export TWINE_USERNAME=__token__
           export TWINE_PASSWORD="${{ secrets.PYPI_API_TOKEN }}"
@@ -86,15 +86,15 @@ jobs:
         run: python -m cibuildwheel --output-dir mac-wheels
       - name: List available wheels
         run: |
-            ls mac-wheels
+          ls mac-wheels
       - name: Publish to PyPI
         run: |
-            python -m venv ci-env
-            source ci-env/bin/activate
-            python -m pip install twine==6.0.1
-            export TWINE_USERNAME=__token__
-            export TWINE_PASSWORD="${{ secrets.PYPI_API_TOKEN }}"
-            twine upload --verbose mac-wheels/*
+          python -m venv ci-env
+          source ci-env/bin/activate
+          python -m pip install twine==6.0.1
+          export TWINE_USERNAME=__token__
+          export TWINE_PASSWORD="${{ secrets.PYPI_API_TOKEN }}"
+          twine upload --verbose mac-wheels/*
 
   release-pypi-macos-arm64:
     name: Build wheels for Apple M chips
@@ -116,15 +116,15 @@ jobs:
         run: python -m cibuildwheel --output-dir mac-wheels
       - name: List available wheels
         run: |
-            ls mac-wheels
+          ls mac-wheels
       - name: Publish to PyPI
         run: |
-            python -m venv ci-env
-            source ci-env/bin/activate
-            python -m pip install twine==6.0.1
-            export TWINE_USERNAME=__token__
-            export TWINE_PASSWORD="${{ secrets.PYPI_API_TOKEN }}"
-            twine upload --verbose mac-wheels/*
+          python -m venv ci-env
+          source ci-env/bin/activate
+          python -m pip install twine==6.0.1
+          export TWINE_USERNAME=__token__
+          export TWINE_PASSWORD="${{ secrets.PYPI_API_TOKEN }}"
+          twine upload --verbose mac-wheels/*
 
   release-pypi-sdist:
     runs-on: ubuntu-latest
@@ -141,10 +141,10 @@ jobs:
           ls ${{ github.workspace }}/dist
       - name: Publish to PyPI
         run: |
-            pip3 install twine==6.0.1
-            export TWINE_USERNAME=__token__
-            export TWINE_PASSWORD="${{ secrets.PYPI_API_TOKEN }}"
-            twine upload --verbose dist/*
+          pip3 install twine==6.0.1
+          export TWINE_USERNAME=__token__
+          export TWINE_PASSWORD="${{ secrets.PYPI_API_TOKEN }}"
+          twine upload --verbose dist/*
 
   release-conda-linux:
     runs-on: ubuntu-latest
@@ -154,11 +154,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Publish to conda
         run: |
-            docker run --rm -v ${{ github.workspace }}:/src/pyscf \
-            -e CMAKE_BUILD_PARALLEL_LEVEL=4 \
-            -e ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }} \
-            continuumio/miniconda3:25.3.1-1 \
-            bash -c "conda install -y anaconda-client conda-build && conda config --set anaconda_upload yes && cd /src/pyscf && conda build --output-folder . conda"
+          docker run --rm -v ${{ github.workspace }}:/src/pyscf \
+          -e CMAKE_BUILD_PARALLEL_LEVEL=4 \
+          -e ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }} \
+          continuumio/miniconda3:25.3.1-1 \
+          bash -c "conda install -y anaconda-client conda-build && conda config --set anaconda_upload yes && cd /src/pyscf && conda build --output-folder . conda"
 
   release-docker:
     runs-on: ubuntu-latest
